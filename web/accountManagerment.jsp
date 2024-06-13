@@ -107,7 +107,9 @@
                                                     <th>ID</th>
                                                     <th>Email</th>
                                                     <th>Họ Tên</th>
-                                                    <th>SĐT</th>
+                                                    <th>Họ Tên</th>
+                                                    <th>Giới Tính</th>
+                                                    <th>Ngày Sinh</th>
                                                     <th>Địa chỉ</th>
                                                     <th>Chức Năng</th>
                                                 </tr>
@@ -118,6 +120,8 @@
                                                         <td>${u.id}</td>
                                                         <td>${u.email}</td>
                                                         <td>${u.fullName}</td>
+                                                        <td>${u.gender}</td>
+                                                        <td>${u.dob}</td>
                                                         <td>${u.phone}</td>
                                                         <td>${u.address}</td>
                                                         <td>

@@ -4,6 +4,8 @@
  */
 package Model;
 
+import java.util.Date;
+
 /**
  *
  * @author ADMIN
@@ -14,14 +16,16 @@ public class User {
     private String email;
     private String pass;
     private String fullName;
-    private int phone;
+    private String phone;
     private String address;
     private int roleId;
+    private String gender;
+    private Date dob;
 
     public User() {
     }
 
-    public User(int id, String email, String pass, String fullName, int phone, String address, int roleId) {
+    public User(int id, String email, String pass, String fullName, String phone, String address, int roleId, String gender, Date dob) {
         this.id = id;
         this.email = email;
         this.pass = pass;
@@ -29,6 +33,8 @@ public class User {
         this.phone = phone;
         this.address = address;
         this.roleId = roleId;
+        this.gender = gender;
+        this.dob = dob;
     }
 
     public int getId() {
@@ -63,11 +69,11 @@ public class User {
         this.fullName = fullName;
     }
 
-    public int getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(int phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
@@ -86,5 +92,24 @@ public class User {
     public void setRoleId(int roleId) {
         this.roleId = roleId;
     }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
+
+    
+
     
 }

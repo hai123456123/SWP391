@@ -14,6 +14,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -84,35 +89,61 @@ public class ProfileServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User acc = (User) session.getAttribute("acc");
+        throws ServletException, IOException {
+    HttpSession session = request.getSession();
+    User acc = (User) session.getAttribute("acc");
 
-        if (acc != null) {
-            String fullName = request.getParameter("fullName");
-            String phone = request.getParameter("phone");
-            String address = request.getParameter("address");
-            
-            int id = acc.getId();
-            AccountDao ad = new AccountDao();
-            ad.UpdateProfileById(id, fullName, phone, address);
-            session.setAttribute("mess", "Lưu thành công!!!");
+    if (acc != null) {
+        String fullName = request.getParameter("fullName");
+        String gender = request.getParameter("gender");
+        String dob = request.getParameter("dob");
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address");
+
+        // Validate date of birth format
+        Date dateOfBirth = null;
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            dateOfBirth = dateFormat.parse(dob);
+
+            // Validate if date of birth is before current date
+            Date currentDate = new Date();
+            if (dateOfBirth.after(currentDate)) {
+                session.setAttribute("mess", "Ngày sinh phải trước ngày hiện tại.");
+                response.sendRedirect("profile");
+                return;
+            }
+        } catch (ParseException e) {
+            session.setAttribute("mess", "Invalid date format. Please use yyyy-MM-dd.");
             response.sendRedirect("profile");
-            
-            // Assume you have an AccountService to handle the update
-        }else{
-            response.sendRedirect("login.jsp");
+            return;
         }
 
+        // Validate phone number format (10 digits starting with 0)
+        if (!phone.matches("0\\d{9}")) {
+            session.setAttribute("mess", "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại có 10 số và bắt đầu bằng số 0.");
+            response.sendRedirect("profile");
+            return;
+        }
+
+        int id = acc.getId();
+        AccountDao ad = new AccountDao();
+        ad.UpdateProfileById(id, fullName, phone, address, dateOfBirth, gender);
+        session.setAttribute("mess", "Lưu thành công!!!");
+        response.sendRedirect("profile");
+    } else {
+        response.sendRedirect("login.jsp");
+    }
 }
 
-/**
- * Returns a short description of the servlet.
- *
- * @return a String containing servlet description
- */
-@Override
-public String getServletInfo() {
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

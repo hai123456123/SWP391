@@ -8,7 +8,10 @@ import Model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,29 +20,7 @@ import java.util.List;
  */
 public class AccountDao extends DBContext {
 
-    public User listCustomer(String email) {
 
-        String sql = "select * from [dbo].[Users]";
-        try {
-            PreparedStatement st = connection.prepareStatement(sql);
-            st.setString(1, email);
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                User a = new User();
-                a.setId(rs.getInt("id"));
-                a.setEmail(rs.getString("email"));
-                a.setPass(rs.getString("pass"));
-                a.setFullName(rs.getString("fullName"));
-                a.setPhone(rs.getInt("phone"));
-                a.setAddress(rs.getString("address"));
-                a.setRoleId(rs.getInt("roleId"));
-                return a;
-            }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return null;
-    }
 
     public User GetAccount(String gmail, String pass) {
 
@@ -55,7 +36,9 @@ public class AccountDao extends DBContext {
                 a.setEmail(rs.getString("email"));
                 a.setPass(rs.getString("pass"));
                 a.setFullName(rs.getString("fullName"));
-                a.setPhone(rs.getInt("phone"));
+                a.setGender(rs.getString("gender"));
+                a.setDob(rs.getDate("dob"));
+                a.setPhone(rs.getString("phone"));
                 a.setAddress(rs.getString("address"));
                 a.setRoleId(rs.getInt("roleId"));
                 return a;
@@ -78,7 +61,9 @@ public class AccountDao extends DBContext {
                 a.setEmail(rs.getString("email"));
                 a.setPass(rs.getString("pass"));
                 a.setFullName(rs.getString("fullName"));
-                a.setPhone(rs.getInt("phone"));
+                a.setGender(rs.getString("gender"));
+                a.setDob(rs.getDate("dob"));
+                a.setPhone(rs.getString("phone"));
                 a.setAddress(rs.getString("address"));
                 a.setRoleId(rs.getInt("roleId"));
                 list.add(a);
@@ -102,7 +87,9 @@ public class AccountDao extends DBContext {
                 a.setEmail(rs.getString("email"));
                 a.setPass(rs.getString("pass"));
                 a.setFullName(rs.getString("fullName"));
-                a.setPhone(rs.getInt("phone"));
+                a.setGender(rs.getString("gender"));
+                a.setDob(rs.getDate("dob"));
+                a.setPhone(rs.getString("phone"));
                 a.setAddress(rs.getString("address"));
                 a.setRoleId(rs.getInt("roleId"));
                 return a;
@@ -126,7 +113,7 @@ public class AccountDao extends DBContext {
                 a.setEmail(rs.getString("email"));
                 a.setPass(rs.getString("pass"));
                 a.setFullName(rs.getString("fullName"));
-                a.setPhone(rs.getInt("phone"));
+                a.setPhone(rs.getString("phone"));
                 a.setAddress(rs.getString("address"));
                 a.setRoleId(rs.getInt("roleId"));
                 return a;
@@ -172,11 +159,14 @@ public class AccountDao extends DBContext {
     public void UpdateAccountById(int id) {
         String sql = "UPDATE [dbo].[Users]\n"
                 + "   SET [email] = ?\n"
+                + "      ,[pass] = ?\n"
                 + "      ,[fullName] = ?\n"
                 + "      ,[phone] = ?\n"
                 + "      ,[address] = ?\n"
                 + "      ,[roleId] = ?\n"
-                + " WHERE id =?";
+                + "      ,[gender] = ?\n"
+                + "      ,[dob] = ?\n"
+                + " WHERE id = ?";
 
         try {
             PreparedStatement st = connection.prepareStatement(sql);
@@ -210,21 +200,18 @@ public class AccountDao extends DBContext {
         }
     }
 
-    public void UpdateProfileById(int id, String fullName, String phone, String address) {
-        String sql = "UPDATE [dbo].[Users]\n"
-                + "    SET  [fullName] = ?,\n"
-                + "      [phone] = ?,\n"
-                + "      [address] = ?\n" // Loại bỏ dấu phẩy ở đây
-                + " WHERE id = ?";
+    public void UpdateProfileById(int id, String fullName, String phone, String address, Date dob, String gender) {
+        String sql = "UPDATE [dbo].[Users] SET [fullName] = ?, [phone] = ?, [address] = ?, [dob] = ?, [gender] = ? WHERE id = ?";
 
         try {
             PreparedStatement st = connection.prepareStatement(sql);
             st.setString(1, fullName);
             st.setString(2, phone);
             st.setString(3, address);
-            st.setInt(4, id);
+            st.setDate(4, new java.sql.Date(dob.getTime()));
+            st.setString(5, gender);
+            st.setInt(6, id);
             st.executeUpdate();
-
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -281,10 +268,27 @@ public class AccountDao extends DBContext {
     }
 
     public static void main(String[] args) {
-        String email = "hai31082003@gmail.com";
-        String pass = "123";
+        int userId = 2;
+
+        // Test data for updating the user's profile
+        String fullName = "Updated Name";
+        String phone = "1234567890";
+        String address = "123 Updated Street";
+        String gender = "Male";
+        String dob = "1990-01-30";
+
+        Date dateOfBirth = null;
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            dateOfBirth = dateFormat.parse(dob);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return; // Exit if the date format is incorrect
+        }
+
         AccountDao ad = new AccountDao();
-        User u = ad.CheckAccountByEmail(email);
-        System.out.println(u.getFullName());
+        User u = ad.GetAccountById(userId);
+        System.out.println(u.getDob());
     }
+    
 }

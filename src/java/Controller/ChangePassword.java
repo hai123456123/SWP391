@@ -95,6 +95,7 @@ public class ChangePassword extends HttpServlet {
             // Assume you have an AccountDao to handle the update
             AccountDao ad = new AccountDao();
             ad.ChangePasswordById(id, newpass);
+            session.setAttribute("mess", "Đổi mật khẩu thành công");
             response.sendRedirect("profile");
         }
     }

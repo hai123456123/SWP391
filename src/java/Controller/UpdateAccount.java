@@ -12,7 +12,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -58,15 +63,18 @@ public class UpdateAccount extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String id_raw = request.getParameter("id");
-        try {
-            int id = Integer.parseInt(id_raw);
+
+        HttpSession session = request.getSession();
+        if (session.getAttribute("acc") == null) {
+            response.sendRedirect("login.jsp");
+        } else {
+            User user = (User) session.getAttribute("acc");
+            int id = user.getId();
             AccountDao ad = new AccountDao();
             User u = ad.GetAccountById(id);
             request.setAttribute("user", u);
+            request.setAttribute("mess1", session.getAttribute("mess1"));
             request.getRequestDispatcher("updateAccount.jsp").forward(request, response);
-        } catch (NumberFormatException e) {
-            System.out.println(e);
         }
 
     }
@@ -80,26 +88,51 @@ public class UpdateAccount extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String id_raw = request.getParameter("id");
-        String email = request.getParameter("email");
-        String fullName = request.getParameter("fullName");
-        String phone = request.getParameter("phone");
-        String address = request.getParameter("address");
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+    String id_raw = request.getParameter("id");
+    String email = request.getParameter("email");
+    String fullName = request.getParameter("fullName");
+    String phone = request.getParameter("phone");
+    String address = request.getParameter("address");
+    String gender = request.getParameter("gender");
+    String dobStr = request.getParameter("dob");
 
-        try {
-            int id = Integer.parseInt(id_raw);
-            AccountDao ad = new AccountDao();
+    try {
+        int id = Integer.parseInt(id_raw);
 
-            ad.UpdateAccountById(id, email, fullName, phone, address);
+        // Validate date of birth format
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date parsedDate = sdf.parse(dobStr);
+        java.sql.Date dob = new java.sql.Date(parsedDate.getTime());
 
-            // Chuyển hướng về trang danh sách tài khoản sau khi cập nhật thành công
-            response.sendRedirect("accountmanagerment");
-        } catch (NumberFormatException e) {
-            System.out.println(e);
+        // Validate if date of birth is before current date
+        java.util.Date currentDate = new java.util.Date();
+        if (parsedDate.after(currentDate)) {
+            request.getSession().setAttribute("mess1", "Ngày sinh phải trước ngày hiện tại.");
+            response.sendRedirect("updateaccount");
+            return; // Important: return immediately after sendRedirect
         }
+
+        // Validate phone number format (10 digits starting with 0)
+        if (!phone.matches("0\\d{9}")) {
+            request.getSession().setAttribute("mess1", "Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại có 10 số và bắt đầu bằng số 0.");
+            response.sendRedirect("updateaccount");
+            return; // Important: return immediately after sendRedirect
+        }
+
+        AccountDao ad = new AccountDao();
+
+        // Update account information including gender and dob
+        ad.UpdateProfileById(id, fullName, phone, address, dob, gender);
+
+        // Redirect back to the account management page after successful update
+        response.sendRedirect("accountmanagerment");
+    } catch (NumberFormatException | ParseException e) {
+        System.out.println(e);
     }
+}
+
 
     /**
      * Returns a short description of the servlet.

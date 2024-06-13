@@ -1,7 +1,7 @@
 <%-- 
     Document   : changepassword
     Created on : Jun 10, 2024, 10:30:28 AM
-    Author     : ADMIN
+    Author     : Le Minh Hai
 --%>
 
 <!DOCTYPE html>
@@ -11,27 +11,32 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Profile Page</title>
+        <title>Change Password Page</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <style>
             body {
-                background: rgb(99, 39, 120);
+                background: #F8F8F8;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
             }
             .form-control:focus {
                 box-shadow: none;
                 border-color: #BA68C8;
             }
             .profile-button {
-                background: rgb(99, 39, 120);
+                background: #cc0000;
                 box-shadow: none;
                 border: none;
             }
             .profile-button:hover,
             .profile-button:focus,
             .profile-button:active {
-                background: #682773;
+                background: #F44336;
                 box-shadow: none;
             }
             .back:hover {
@@ -51,22 +56,29 @@
                 margin-top: 10px;
                 width: 100%;
             }
+            .container {
+                border: 1px solid #ccc;
+                padding: 20px;
+                border-radius: 10px;
+                max-width: 900px;
+                background: #fff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
         </style>
     </head>
     <body>
-        <div class="container rounded bg-white mt-5 mb-5">
+        <div class="container rounded bg-white">
             <div class="row">
                 <div class="col-md-5 border-right">
                     <div class="d-flex flex-column align-items-center text-center p-3 py-5">
-                        
                         <img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg" alt="Profile Picture">
-                        <span class="font-weight-bold">Name</span>
-                        <button class="btn btn-secondary profile-button edit-button" type="button" onclick="window.location.href = 'changepassword.jsp'">Thay đổi mật khẩu</button>
+                        <span class="font-weight-bold">${sessionScope.acc.fullName}</span>
+                        <button class="btn btn-secondary profile-button edit-button" type="button" onclick="window.location.href = 'profile'">Quay về trang profile</button>
                         <button class="btn btn-secondary profile-button edit-button" type="button" onclick="window.location.href = 'home.jsp'">Quay về trang chủ</button>
                         <span> </span>
                     </div>
                 </div>
-                <div class="col-md-7 border-right">
+                <div class="col-md-7 ">
                     <div class="p-3 py-5">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h4 class="text-right">Đổi Mật Khẩu</h4>
@@ -77,15 +89,15 @@
                                 <p style="color: red">${requestScope.mess}</p>
                                 <div class="col-md-12 mb-3">
                                     <label class="labels">Nhập mật khẩu hiện tại</label>
-                                    <input required type="text" class="form-control" placeholder="nhập mật khẩu hiện tại" name="pass" required>
+                                    <input required type="password" class="form-control" placeholder="nhập mật khẩu hiện tại" name="pass" required>
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label class="labels">Nhập mật khẩu mới</label>
-                                    <input required type="text" class="form-control" placeholder="nhập mật khẩu mới" name="newpass" required>
+                                    <input required type="password" class="form-control" placeholder="nhập mật khẩu mới" name="newpass" required>
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label class="labels">Xác nhận mật khẩu mới</label>
-                                    <input  required type="text" class="form-control" placeholder="xác nhận mật khẩu mới" name="comfirmnewpass" required>
+                                    <input required type="password" class="form-control" placeholder="xác nhận mật khẩu mới" name="confirmnewpass" required>
                                 </div>
                                 <div class="mt-5 text-center">
                                     <button class="btn btn-primary profile-button" type="submit">Lưu Thông Tin</button>
@@ -99,4 +111,3 @@
         </div>
     </body>
 </html>
-
